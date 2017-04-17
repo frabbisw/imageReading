@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#define BufferSize 1000000
+
+#define BufferUnit 2500
+#define BufferSize BufferUnit*BufferUnit
 
 struct FileHeader
 {
@@ -28,15 +30,9 @@ struct InfoHeader
 };
 struct Pixel
 {
-	unsigned char Red;
-	unsigned char Green;
 	unsigned char Blue;
-};
-struct Line
-{
-	struct Pixel *values;
-	unsigned char garbage1;
-	unsigned char garbage2;
+	unsigned char Green;
+	unsigned char Red;
 };
 
 FILE * filer, * filew;
@@ -47,8 +43,7 @@ char buffer[BufferSize];
 
 struct FileHeader *fileheader = header;
 struct InfoHeader *infoheader = header+14;
-struct Pixel *pixels = header+54+24*3;  
-
+struct Pixel *image[BufferUnit];
 void input()
 {
 	if((numr=fread(header,1,54,filer))!=BufferSize)
@@ -74,38 +69,25 @@ void input()
 
 void change()
 {
-	/*pixels
-	int i;
+	int i,j;
 	for(i=0; i<infoheader->Height; i++)
 	{
-		
+		for(j=0; j<infoheader->Width; j++)
+		{
+			image[i][j].Green=image[i][j].Red;
+			image[i][j].Blue=image[i][j].Red;
+			image[i][j].Red=image[i][j].Red;
+		}
 	}
-	
-	/*struct Pixel *visit = pixels;
-	int i;
-	for(i=0; i<infoheader->Height*infoheader->Width; i++)
-	{
-		//pixels
-	}
-	
-	/*
-	//struct Pixel **k = &pixels;
-	
-	int i;
+}
+
+void makeArray()
+{
+	int i,j;
 	for(i=0; i<infoheader->Height; i++)
 	{
-		//image[i]=&pixels[i*infoheader->Width+i*2];
-		image[i]=pixels;//+i*infoheader->Width+i*2;
+		image[i]=&buffer[i*(infoheader->Width)*sizeof(struct Pixel)];
 	}
-	*/
-	/*
-	int i;
-	for(i=0;i<infoheader->Height*infoheader->Width+2;i++)
-	{
-		struct Pixel p = pixels[i];
-		printf("\t%d %d %d\n",p.Red,p.Green,p.Blue);
-	}
-	*/
 }
 
 void output()
@@ -141,6 +123,7 @@ int	main(int argc, char ** argv)
 	}
 	
 	input();
+	makeArray();
 	change();
 	output();
 	
