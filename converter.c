@@ -81,7 +81,7 @@ void change()
 	}
 }
 
-void makeArray()
+void formArray()
 {
 	int i,j;
 	for(i=0; i<infoheader->Height; i++)
@@ -94,12 +94,12 @@ void output()
 {
 	if((numw=fwrite(header,1,54,filew))!=54)
 	{
-		fprintf(stderr,"write file error-1.\n");
+		fprintf(stderr,"failed to write head.\n");
 		exit(1);
 	}		
 	if((numw=fwrite(buffer,1,numr,filew))!=numr)
 	{
-		fprintf(stderr,"write file error-2.\n");
+		fprintf(stderr,"failed to write buffer.\n");
 		exit(1);
 	}
 	fclose(filew);
@@ -108,22 +108,22 @@ void output()
 int	main(int argc, char ** argv)
 {
 	if(argc!=3){
-		fprintf(stderr,"USAGE: binary-test inputfile outputfile.\n");
+		fprintf(stderr,"USAGE: ./converter inputfile outputfile\n");
 		exit(1);
 	}
 	
 	if((filer=fopen(argv[1],"rb"))==NULL){
-		fprintf(stderr, "open read file error.\n");
+		fprintf(stderr, "failed to open input file.\n");
 		exit(1);
 	}
 
 	if((filew=fopen(argv[2],"wb"))==NULL){
-		fprintf(stderr,"open write file error.\n");
+		fprintf(stderr,"failed to open output file.\n");
 		exit(1);
 	}
 	
 	input();
-	makeArray();
+	formArray();
 	change();
 	output();
 	
